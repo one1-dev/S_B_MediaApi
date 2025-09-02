@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S_B_MediaApi", "S_B_MediaApi.csproj", "{14FF37F6-2197-C725-E380-815008D2BCF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{14FF37F6-2197-C725-E380-815008D2BCF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FF37F6-2197-C725-E380-815008D2BCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FF37F6-2197-C725-E380-815008D2BCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FF37F6-2197-C725-E380-815008D2BCF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC7CFB96-D086-4724-93DA-480BE55CDCBF}
+	EndGlobalSection
+EndGlobal
