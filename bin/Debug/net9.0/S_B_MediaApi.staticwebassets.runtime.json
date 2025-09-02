@@ -1,1 +1,1 @@
-{"ContentRoots":["C:\\Projects\\Tests\\S_B_MediaApi\\wwwroot\\"],"Root":{"Children":{"swagger":{"Children":{"openapi.yaml":{"Children":null,"Asset":{"ContentRootIndex":0,"SubPath":"swagger/openapi.yaml"},"Patterns":null}},"Asset":null,"Patterns":null}},"Asset":null,"Patterns":[{"ContentRootIndex":0,"Pattern":"**","Depth":0}]}}
+{"ContentRoots":["C:\\Projects\\Tests\\S_B_MediaApi\\wwwroot\\"],"Root":{"Children":null,"Asset":null,"Patterns":[{"ContentRootIndex":0,"Pattern":"**","Depth":0}]}}
