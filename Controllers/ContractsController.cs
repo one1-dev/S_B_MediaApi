@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using S_B_MediaApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using S_B_MediaApi.Data;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,6 +22,7 @@ public class ContractsController : ControllerBase
         }
     };
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet]
     public ActionResult GetContracts([FromQuery] long? minId, [FromQuery] long? maxId,
         [FromQuery] string? validFrom, [FromQuery] string? validUntil, [FromQuery] string? name,
@@ -35,6 +37,7 @@ public class ContractsController : ControllerBase
         return Ok(new ContractCollection(list));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPost]
     public ActionResult<ContractDetail> CreateContract([FromBody, Required] ContractDetail body, [FromQuery] int? templateId)
     {
@@ -44,6 +47,7 @@ public class ContractsController : ControllerBase
         return Created($"/contracts/{nextId}/detail", created);
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}")]
     public ActionResult GetContract(long id)
     {
@@ -51,6 +55,7 @@ public class ContractsController : ControllerBase
         return found is null ? NotFound() : Ok(new ContractCollection(new[] { found.Contract }));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpDelete("{id:long}")]
     public IActionResult DeleteContract(long id)
     {
@@ -58,6 +63,7 @@ public class ContractsController : ControllerBase
         return removed == 0 ? NotFound() : Ok();
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/detail")]
     public ActionResult<ContractDetail> GetContractDetail(long id)
     {
@@ -65,6 +71,7 @@ public class ContractsController : ControllerBase
         return found is null ? NotFound() : Ok(found);
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPut("{id:long}/detail")]
     public ActionResult<ContractDetail> UpdateContractDetail(long id, [FromBody, Required] ContractDetail body)
     {
@@ -75,6 +82,7 @@ public class ContractsController : ControllerBase
         return Ok(updated);
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/consumers")]
     public ActionResult<ConsumerCollection> GetContractConsumers(long id)
     {
@@ -83,6 +91,7 @@ public class ContractsController : ControllerBase
         return Ok(new ConsumerCollection(list));
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/consumersdetail")]
     public ActionResult<ConsumerDetails> GetContractConsumersDetail(long id)
     {
@@ -90,6 +99,7 @@ public class ContractsController : ControllerBase
         return Ok(new ConsumerDetails(details));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPost("{id:long}/consumers")]
     public ActionResult<ConsumerDetail> CreateContractConsumer(long id, [FromBody, Required] ConsumerDetail body, [FromQuery] int? templateId)
     {
@@ -100,6 +110,7 @@ public class ContractsController : ControllerBase
         return Created($"/consumers/{id},{nextId}/detail", created);
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/invoices")]
     public ActionResult<InvoiceCollection> GetContractInvoices(long id, [FromQuery] long? minId, [FromQuery] long? maxId, [FromQuery] DateTime? minDate, [FromQuery] DateTime? maxDate)
     {
@@ -113,6 +124,7 @@ public class ContractsController : ControllerBase
         return Ok(new InvoiceCollection(result));
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpPost("{id:long}/invoices")]
     public ActionResult<InvoiceJob> CreateContractInvoiceJob(long id, [FromQuery] DateTime? startDateTime, [FromQuery] DateTime? refDate, [FromQuery] int? flatRate, [FromQuery] int? bestPrice)
     {
@@ -120,6 +132,7 @@ public class ContractsController : ControllerBase
         return Created(job.Href, job);
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/account")]
     public ActionResult<Account> GetContractAccount(long id, [FromQuery] DateTime? minDate, [FromQuery] DateTime? maxDate)
     {
@@ -130,6 +143,7 @@ public class ContractsController : ControllerBase
         return Ok(new Account(tx));
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/sales")]
     public ActionResult<SalesTransactions> GetContractSales(long id, [FromQuery] DateTime? minDate, [FromQuery] DateTime? maxDate, [FromQuery] int exported = -1)
     {
@@ -137,6 +151,7 @@ public class ContractsController : ControllerBase
         return list.Count == 0 ? NoContent() : Ok(new SalesTransactions(list));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPost("{id:long}/sales")]
     public ActionResult<SalesTransactions> CreateContractSales(long id, [FromBody, Required] SalesTransactions body)
     {
@@ -145,12 +160,14 @@ public class ContractsController : ControllerBase
         return Created($"/contracts/{id}/sales", new SalesTransactions(added));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPut("sales")]
     public ActionResult<SalesTransactions> UpdateContractSales([FromBody, Required] SalesTransactions body)
     {
         return Ok(body);
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/parktrans")]
     public ActionResult<ParkTransactions> GetContractParkTrans(long id, [FromQuery] DateTime? minDate, [FromQuery] DateTime? maxDate)
     {
@@ -158,6 +175,7 @@ public class ContractsController : ControllerBase
         return list.Count == 0 ? NoContent() : Ok(new ParkTransactions(list));
     }
 
+    [Authorize(Policy = "Contracts.Read")]
     [HttpGet("{id:long}/freefacilities")]
     public ActionResult<ContractFreeFacilities> GetFreeFacilities(long id)
     {
@@ -167,12 +185,14 @@ public class ContractsController : ControllerBase
         }));
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpPost("{id:long}/freefacilities")]
     public IActionResult CreateFreeFacilities(long id, [FromBody, Required] ContractFreeFacilities body)
     {
         return StatusCode(201);
     }
 
+    [Authorize(Policy = "Contracts.Write")]
     [HttpDelete("{id:long}/freefacilities")]
     public IActionResult DeleteFreeFacilities(long id)
     {
