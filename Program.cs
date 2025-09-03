@@ -29,15 +29,15 @@ builder.Services.AddSingleton<IOpenSearchClient>(_ =>
 });
 
 // ---------- PostgreSQL ----------
-// Option A: EF Core
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(cfg.GetConnectionString("Postgres")));
 
 
+// ---------- SSO-JWT ----------
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
-        o.Authority = cfg["Auth:Authority"];   // e.g. https://sso.yourdomain.com
+        o.Authority = cfg["Auth:Authority"];   // e.g. https://sso.domain.com
         o.Audience = cfg["Auth:Audience"];    // e.g. customer-media-api
         o.MapInboundClaims = false;
         o.TokenValidationParameters = new TokenValidationParameters
