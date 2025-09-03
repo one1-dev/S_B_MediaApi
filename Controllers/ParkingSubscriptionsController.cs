@@ -5,7 +5,7 @@ using S_B_MicroService.Domain.Models;
 using S_B_MicroService.Domain.Services;
 using S_B_MicroService.Integrations.Sb;
 
-namespace S_B_MicroService.Controllers;
+namespace S_B_MediaApi.Controllers;
 
 [ApiController]
 [Route("api/parking")]
@@ -82,7 +82,6 @@ public sealed class ParkingSubscriptionsController(ISubscriptionsService svc, IS
 
         using var reader = new StreamReader(file.OpenReadStream(), Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
 
-        // header (optional)
         var header = await reader.ReadLineAsync();
         var lineNo = 1;
 
@@ -129,8 +128,6 @@ public sealed class ParkingSubscriptionsController(ISubscriptionsService svc, IS
         return Ok(new BulkUploadResult(office_id, ok, fail, results));
     }
 
-    // --- helpers & local DTOs ---
-
     private static string Get(string[] arr, int idx) =>
         idx < arr.Length ? arr[idx].Trim() : string.Empty;
 
@@ -139,13 +136,10 @@ public sealed class ParkingSubscriptionsController(ISubscriptionsService svc, IS
 
     private static string[] SplitCsv(string line)
     {
-        // Minimal CSV splitter (no quoted-commas handling).
-        // Replace with a CSV library if you need robust parsing.
         return line.Split(',', StringSplitOptions.TrimEntries);
     }
 }
 
-// Request/Response DTOs local to this controller
 public sealed record UpdatePlateDto(string NewLicense);
 
 public sealed record VehicleStatusResponse(

@@ -13,11 +13,8 @@ public sealed class ApprovalsController : ControllerBase
 
     public ApprovalsController(ILogger<ApprovalsController> log) => _log = log;
 
-    /// <summary>
-    /// Submit a parking-change request (office not authorized for direct update).
-    /// </summary>
     [HttpPost("parking-change")]
-    [Authorize] // adjust to your policy if needed
+    [Authorize]
     public ActionResult<ApprovalItem> Submit([FromBody] ParkingChangeRequestDto req)
     {
         if (string.IsNullOrWhiteSpace(req.OfficeName) ||
@@ -46,9 +43,6 @@ public sealed class ApprovalsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = item.Id }, item);
     }
 
-    /// <summary>
-    /// Get approval by id.
-    /// </summary>
     [HttpGet("{id:guid}")]
     [Authorize]
     public ActionResult<ApprovalItem> Get(Guid id)
@@ -56,9 +50,6 @@ public sealed class ApprovalsController : ControllerBase
         return _store.TryGetValue(id, out var item) ? Ok(item) : NotFound();
     }
 
-    /// <summary>
-    /// Approve request.
-    /// </summary>
     [HttpPost("{id:guid}/approve")]
     [Authorize(/*Policy = "Approvals.Manage"*/)]
     public ActionResult<ApprovalItem> Approve(Guid id, [FromBody] DecisionDto? body)
@@ -77,9 +68,6 @@ public sealed class ApprovalsController : ControllerBase
         return Ok(item);
     }
 
-    /// <summary>
-    /// Reject request.
-    /// </summary>
     [HttpPost("{id:guid}/reject")]
     [Authorize(/*Policy = "Approvals.Manage"*/)]
     public ActionResult<ApprovalItem> Reject(Guid id, [FromBody] DecisionDto? body)
@@ -98,8 +86,6 @@ public sealed class ApprovalsController : ControllerBase
         return Ok(item);
     }
 }
-
-// ===== DTOs / models (you can move these to Domain/Models later) =====
 
 public sealed record ParkingChangeRequestDto(
     string OfficeName,
