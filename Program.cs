@@ -1,44 +1,45 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.EntityFrameworkCore;
 using OpenSearch.Client;
 using OpenSearch.Net;
-using S_B_MediaApi.Data;
-using S_B_MediaApi.Services;
+using S_B_MicroService.Data;
+using S_B_MicroService.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var cfg = builder.Configuration;
 
+// Controllers
 builder.Services.AddControllers();
-builder.Services.AddScoped<ContractSearchService>();
 
+// EF Core (PostgreSQL)
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseNpgsql(cfg.GetConnectionString("Postgres")));
 
-// ---------- OpenSearch client ----------
+// OpenSearch client
 builder.Services.AddSingleton<IOpenSearchClient>(_ =>
 {
     var pool = new SingleNodeConnectionPool(new Uri(cfg["OpenSearch:Uri"]!));
     var settings = new ConnectionSettings(pool)
         .DefaultIndex(cfg["OpenSearch:DefaultIndex"])
         .BasicAuthentication(cfg["OpenSearch:Username"], cfg["OpenSearch:Password"])
-        // DEV ONLY: if you're on self-signed TLS in dev
+        // DEV ONLY: allow self-signed in local envs
         .ServerCertificateValidationCallback(CertificateValidations.AllowAll);
 
     return new OpenSearchClient(settings);
 });
 
-// ---------- PostgreSQL ----------
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(cfg.GetConnectionString("Postgres")));
+// Domain services
+builder.Services.AddScoped<ContractSearchService>();
 
-
-// ---------- SSO-JWT ----------
+// AuthN/Z (SSO/JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
         o.Authority = cfg["Auth:Authority"];   // e.g. https://sso.domain.com
-        o.Audience = cfg["Auth:Audience"];    // e.g. customer-media-api
+        o.Audience = cfg["Auth:Audience"];    // e.g. S_B_MediaApi
         o.MapInboundClaims = false;
         o.TokenValidationParameters = new TokenValidationParameters
         {
@@ -56,17 +57,23 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Contracts.Write", p => p.RequireClaim("scope", "contracts.write"));
 });
 
-// --- Swagger ---
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "S_B_MediaApi",
+        Title = "S_B_MicroService",
         Version = "v1",
         Description = "Customer & Media Web Service (generated from controllers)"
     });
 
+    // Avoid schema/route collisions
+    c.CustomSchemaIds(t => t.FullName!.Replace('+', '.'));
+    c.ResolveConflictingActions(apiDescs => apiDescs.First());
+    c.SupportNonNullableReferenceTypes();
+
+    // Bearer auth for Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -74,25 +81,16 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
-        Description = "Enter: Bearer {CommandoOne}"
+        Description = "Enter: Bearer {your_access_token}"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+        { new OpenApiSecurityScheme
+            { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
+          Array.Empty<string>() }
     });
 
-    // XML comments (only if file exists)
+    // XML comments (if you enabled <GenerateDocumentationFile/> in .csproj)
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -101,11 +99,20 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+// Swagger UI (enabled in Development by default)
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "S_B_MediaApi v1");
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "S_B_MediaApi v1"));
+}
+else
+{
+    // uncomment if you want Swagger in non-dev too:
+    // app.UseSwagger();
+    // app.UseSwaggerUI(c =>
+    //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "S_B_MediaApi v1"));
+}
 
 app.UseHttpsRedirection();
 
@@ -113,4 +120,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();

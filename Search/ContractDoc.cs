@@ -1,4 +1,4 @@
-namespace S_B_MediaApi.Search;
+namespace S_B_MicroService.Search;
 
 public class ContractDoc
 {

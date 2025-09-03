@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using S_B_MediaApi.Models;
+using S_B_MicroService.Domain.Models;
 
-namespace S_B_MediaApi.Data;
+namespace S_B_MicroService.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

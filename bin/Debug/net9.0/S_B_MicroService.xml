@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>S_B_MicroService</name>
+    </assembly>
+    <members>
+        <member name="M:S_B_MicroService.Controllers.ApprovalsController.Submit(S_B_MicroService.Controllers.ParkingChangeRequestDto)">
+            <summary>
+            Submit a parking-change request (office not authorized for direct update).
+            </summary>
+        </member>
+        <member name="M:S_B_MicroService.Controllers.ApprovalsController.Get(System.Guid)">
+            <summary>
+            Get approval by id.
+            </summary>
+        </member>
+        <member name="M:S_B_MicroService.Controllers.ApprovalsController.Approve(System.Guid,S_B_MicroService.Controllers.DecisionDto)">
+            <summary>
+            Approve request.
+            </summary>
+        </member>
+        <member name="M:S_B_MicroService.Controllers.ApprovalsController.Reject(System.Guid,S_B_MicroService.Controllers.DecisionDto)">
+            <summary>
+            Reject request.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:S_B_MicroService.Controllers.VehicleController.VehicleStatus(System.String,System.Int32,System.Threading.CancellationToken)" -->
+    </members>
+</doc>
